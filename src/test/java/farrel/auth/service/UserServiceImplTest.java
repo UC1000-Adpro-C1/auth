@@ -16,13 +16,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class UserDetailsImpTest {
+public class UserServiceImplTest {
 
     @Mock
     private UserRepository userRepository;
 
     @InjectMocks
-    private UserDetailsImpl userDetailsImp;
+    private UserDetailsImpl userDetailsImpl;
 
     @BeforeEach
     void setUp() {
@@ -33,7 +33,7 @@ public class UserDetailsImpTest {
 
     @Test
     void loadUserByUsername_success() {
-        UserDetails userDetails = userDetailsImp.loadUserByUsername("testUser");
+        UserDetails userDetails = userDetailsImpl.loadUserByUsername("testUser");
         assertEquals("testUser", userDetails.getUsername());
     }
 
@@ -41,7 +41,7 @@ public class UserDetailsImpTest {
     void loadUserByUsername_userNotFound() {
         when(userRepository.findByUsername("testUser")).thenReturn(Optional.empty());
         try {
-            userDetailsImp.loadUserByUsername("testUser");
+            userDetailsImpl.loadUserByUsername("testUser");
         } catch (Exception e) {
             assertEquals("User not found", e.getMessage());
         }
