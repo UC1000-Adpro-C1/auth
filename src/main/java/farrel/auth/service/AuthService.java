@@ -5,6 +5,7 @@ import farrel.auth.model.Token;
 import farrel.auth.model.User;
 import farrel.auth.repository.TokenRepository;
 import farrel.auth.repository.UserRepository;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -37,13 +38,12 @@ public class AuthService {
         user.setUsername(request.getUsername());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setRole(request.getRole());
-        user = repository.save(user);
-        Token jwt = jwtService.saveUserToken(user);
+        repository.save(user);
 
-        return ResponseEntity.ok(new AuthResponse(jwt.getToken(), "User registered successfully"));
+        return ResponseEntity.ok(new AuthResponse(null, "User registered successfully"));
     }
 
-    public ResponseEntity<AuthResponse> authenticate(User request) {
+    public ResponseEntity<AuthResponse> authenticate(User request, HttpServletResponse response) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getUsername(),
@@ -57,6 +57,7 @@ public class AuthService {
         jwtService.revokeTokenByUser(user);
         Token jwt = jwtService.saveUserToken(user);
 
+        response.addHeader("Set-Cookie", "jwt=" + jwt.getToken() + "; HttpOnly; SameSite=None; Path=/");
         return ResponseEntity.ok(new AuthResponse(jwt.getToken(), "User authenticated successfully"));
     }
 }

@@ -6,6 +6,7 @@ import farrel.auth.model.User;
 import farrel.auth.repository.TokenRepository;
 import farrel.auth.repository.UserRepository;
 import farrel.auth.service.JWTService;
+import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -62,12 +63,10 @@ public class AuthServiceTest {
     public void testRegister() {
         when(userRepository.findByUsername(user.getUsername())).thenReturn(java.util.Optional.empty());
         when(passwordEncoder.encode(user.getPassword())).thenReturn("encodedPassword");
-        when(userRepository.save(any(User.class))).thenReturn(user);
-        when(jwtService.saveUserToken(user)).thenReturn(token);
 
         ResponseEntity<AuthResponse> response = authService.register(user);
 
-        assertEquals(token.getToken(), response.getBody().getToken());
+        assertNull(response.getBody().getToken());
         assertEquals("User registered successfully", response.getBody().getMessage());
     }
 
@@ -94,22 +93,24 @@ public class AuthServiceTest {
 
     @Test
     public void testAuthenticate() {
+        HttpServletResponse response = mock(HttpServletResponse.class);
         when(userRepository.findByUsername(user.getUsername())).thenReturn(java.util.Optional.of(user));
         when(jwtService.saveUserToken(user)).thenReturn(token);
 
-        ResponseEntity<AuthResponse> response = authService.authenticate(user);
+        ResponseEntity<AuthResponse> result = authService.authenticate(user, response);
 
-        assertEquals(token.getToken(), response.getBody().getToken());
-        assertEquals("User authenticated successfully", response.getBody().getMessage());
+        assertEquals(token.getToken(), result.getBody().getToken());
+        assertEquals("User authenticated successfully", result.getBody().getMessage());
     }
 
     @Test
     public void testAuthenticateNotFound() {
+        HttpServletResponse response = mock(HttpServletResponse.class);
         when(userRepository.findByUsername(user.getUsername())).thenReturn(java.util.Optional.empty());
 
-        ResponseEntity<AuthResponse> response = authService.authenticate(user);
+        ResponseEntity<AuthResponse> result = authService.authenticate(user, response);
 
-        assertNull(response.getBody().getToken());
-        assertEquals("User not found", response.getBody().getMessage());
+        assertNull(result.getBody().getToken());
+        assertEquals("User not found", result.getBody().getMessage());
     }
 }

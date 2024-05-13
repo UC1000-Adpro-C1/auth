@@ -2,6 +2,7 @@ package farrel.auth.controller;
 
 import farrel.auth.model.AuthResponse;
 import farrel.auth.model.User;
+import farrel.auth.restcontroller.AuthRestController;
 import farrel.auth.service.AuthService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,7 +18,7 @@ import static org.mockito.Mockito.when;
 public class AuthControllerTest {
 
     @InjectMocks
-    private AuthController authController;
+    private AuthRestController authController;
 
     @Mock
     private AuthService authService;
@@ -37,10 +38,10 @@ public class AuthControllerTest {
     @Test
     public void testLogin() {
         User user = new User();
-        AuthResponse expectedResponse = new AuthResponse("testToken", "User authenticated successfully");
-        when(authService.authenticate(user)).thenReturn(ResponseEntity.ok(expectedResponse));
+        AuthResponse expectedResponse = new AuthResponse("testToken", "User registered successfully");
+        when(authService.authenticate(user, null)).thenReturn(ResponseEntity.ok(expectedResponse));
 
-        ResponseEntity<AuthResponse> response = authController.login(user);
+        ResponseEntity<AuthResponse> response = authController.login(user, null);
 
         assertEquals(expectedResponse, response.getBody());
     }
