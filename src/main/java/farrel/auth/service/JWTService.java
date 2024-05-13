@@ -7,11 +7,11 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
-import org.springframework.beans.factory.annotation.Value;
+
 import javax.crypto.SecretKey;
 import java.util.Date;
 import java.util.function.Function;
@@ -19,9 +19,9 @@ import java.util.function.Function;
 @Service
 public class JWTService {
 
-    @Value("${JWT_SECRET_KET}")
+    @Value("${jwt.secret}")
     private String SECRET_KEY;
-    
+
     @Autowired
     private TokenRepository tokenRepository;
 
@@ -56,7 +56,6 @@ public class JWTService {
                 .expiration(new Date(System.currentTimeMillis() + 24*60*60*1000 ))
                 .signWith(getSigninKey())
                 .compact();
-
         return token;
     }
 
@@ -72,12 +71,11 @@ public class JWTService {
 
     public boolean isValid(String token, UserDetails user) {
         String username = extractUsername(token);
-
-        Token validTokens = tokenRepository.findByToken(token)
-                .orElseThrow(() -> new RuntimeException("Token not found"));
-
-        boolean validToken = !validTokens.isLoggedOut();
-
+        Token findedToken = tokenRepository.findByToken(token).orElse(null);
+        boolean validToken = false;
+        if (findedToken != null) {
+            validToken = !findedToken.isLoggedOut();
+        }
         return (username.equals(user.getUsername())) && !isTokenExpired(token) && validToken;
     }
 
@@ -92,13 +90,11 @@ public class JWTService {
     }
 
     public Token revokeTokenByUser(User user) {
-        Token validTokens = tokenRepository.findByUser(user)
-                .orElseThrow(() -> new RuntimeException("Token not found"));
-
-        validTokens.setLoggedOut(true);
-
-        tokenRepository.save(validTokens);
-
+        Token validTokens = tokenRepository.findByUser(user).orElse(null);
+        if (validTokens == null) {
+            return null;
+        }
+        tokenRepository.delete(validTokens);
         return validTokens;
     }
 

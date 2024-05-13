@@ -9,6 +9,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Optional;
 
@@ -27,6 +28,7 @@ public class JWTServiceTest {
 
     @BeforeEach
     public void setup() {
+        ReflectionTestUtils.setField(jwtService, "SECRET_KEY", "xJ3zhVZrhTATFy9C8o2Rdi0Mehl9nT1FkmcCJQ5GJIsZ4lWpEeh3HFBhR5BdFZ2m");
         user = new User();
         user.setUsername("testUser");
         token = jwtService.saveUserToken(user);
@@ -46,10 +48,15 @@ public class JWTServiceTest {
     }
 
     @Test
-    public void testIsValidThrowsException() {
-        when(tokenRepository.findByToken(token.getToken())).thenReturn(Optional.empty());
-        assertThrows(RuntimeException.class, () -> jwtService.isValid(token.getToken(), user));
+    public void testIsValidTokenNotFound() {
+        // Setup
+        when(tokenRepository.findByToken(token.getToken())).thenReturn(Optional.empty()); 
+        // Execute
+        boolean result = jwtService.isValid(token.getToken(), user);   
+        // Assert
+        assertFalse(result);
     }
+    
 
     @Test
     public void testIsNotValid() {
@@ -79,17 +86,14 @@ public class JWTServiceTest {
     public void testRevokeTokenByUser() {
         when(tokenRepository.findByUser(user)).thenReturn(Optional.of(token));
         Token revokedToken = jwtService.revokeTokenByUser(user);
-        assertEquals(token.getToken(), revokedToken.getToken());
-        assertTrue(revokedToken.isLoggedOut());
+        verify(tokenRepository, times(1)).delete(token);
+        assertEquals(token, revokedToken);
     }
 
     @Test
-    public void testRevokeTokenByUserThrowsException() {
-        User user = new User();
-        user.setUsername("testUsername");
-
+    public void testRevokeTokenByUserReturnsNull() {
         when(tokenRepository.findByUser(user)).thenReturn(Optional.empty());
-
-        assertThrows(RuntimeException.class, () -> jwtService.revokeTokenByUser(user));
+        Token revokedToken = jwtService.revokeTokenByUser(user);
+        assertNull(revokedToken);
     }
 }
