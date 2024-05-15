@@ -18,7 +18,7 @@ import java.util.function.Function;
 
 @Service
 public class JWTService {
-    private String SECRET_KEY = "xJ3zhVZrhTATFy9C8o2Rdi0Mehl9nT1FkmcCJQ5GJIsZ4lWpEeh3HFBhR5BdFZ2m";
+    private final String SECRET_KEY = "aJ3zhVZrhTATFy9C8o2Rdi0Mehl9nT1FkmcCJQ5GJIsZ4lWpEeh3HFBhR5BdFZ2m";
 
     @Autowired
     private TokenRepository tokenRepository;
