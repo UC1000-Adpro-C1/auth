@@ -3,10 +3,18 @@ plugins {
     jacoco
 	id("org.springframework.boot") version "3.2.5"
 	id("io.spring.dependency-management") version "1.1.4"
+    id("org.sonarqube") version "4.4.1.3373"
 }
 
 group = "farrel"
 version = "0.0.1-SNAPSHOT"
+sonar {
+  properties {
+    property("sonar.projectKey", "UC1000-Adpro-C1_backend-springboot")
+    property("sonar.organization", "uc1000-adpro-c1")
+    property("sonar.host.url", "https://sonarcloud.io")
+  }
+}
 
 java {
 	sourceCompatibility = JavaVersion.VERSION_17
