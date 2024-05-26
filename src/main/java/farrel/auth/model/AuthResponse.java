@@ -7,14 +7,16 @@ public class AuthResponse {
     private String password;
     private Role role;
     private long money;
+    private Integer userId;  // Add this field
 
-    public AuthResponse(String token, String message, String username, String password, Role role, long money) {
+    public AuthResponse(String token, String message, String username, String password, Role role, long money, Integer userId) {
         this.token = token;
         this.message = message;
         this.username = username;
         this.password = password;
         this.role = role;
         this.money = money;
+        this.userId = userId;  // Initialize this field
     }
 
     // Getters and Setters
@@ -64,5 +66,13 @@ public class AuthResponse {
 
     public void setMoney(long money) {
         this.money = money;
+    }
+
+    public Integer getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Integer userId) {
+        this.userId = userId;
     }
 }

@@ -14,7 +14,7 @@ public class AuthResponseTest {
         Role expectedRole = Role.STAFF;
         long expectedMoney = 100;
 
-        AuthResponse authResponse = new AuthResponse(expectedToken, expectedMessage, expectedUsername, expectedPassword, expectedRole, expectedMoney);
+        AuthResponse authResponse = new AuthResponse(expectedToken, expectedMessage, expectedUsername, expectedPassword, expectedRole, expectedMoney, 123);
 
         assertEquals(expectedToken, authResponse.getToken());
         assertEquals(expectedMessage, authResponse.getMessage());
