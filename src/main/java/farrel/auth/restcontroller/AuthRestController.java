@@ -18,14 +18,13 @@ public class AuthRestController {
     @Autowired
     private AuthService authService;
 
-    @CrossOrigin("*")
     @PostMapping("/register")
     public ResponseEntity<AuthResponse> register(
             @RequestBody User request
     ) {
         return authService.register(request);
     }
-    @CrossOrigin("*")
+    
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@RequestBody User request,  HttpServletResponse response) {
         return authService.authenticate(request, response);
