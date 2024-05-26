@@ -6,6 +6,9 @@ import farrel.auth.model.User;
 import farrel.auth.repository.TokenRepository;
 import farrel.auth.repository.UserRepository;
 import jakarta.servlet.http.HttpServletResponse;
+
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -28,10 +31,10 @@ public class AuthService {
 
     public ResponseEntity<AuthResponse> register(User request) {
         if(repository.findByUsername(request.getUsername()).isPresent()) {
-            return ResponseEntity.badRequest().body(new AuthResponse(null, "Username is already taken",null, null));
+            return ResponseEntity.badRequest().body(new AuthResponse(null, "Username is already taken",null, null,null));
         }
         if (request.getPassword().length() < 8) {
-            return ResponseEntity.badRequest().body(new AuthResponse(null, "Password must be at least 8 characters",null,null));
+            return ResponseEntity.badRequest().body(new AuthResponse(null, "Password must be at least 8 characters",null,null,null));
         }
         User user = new User();
         user.setEmail(request.getEmail());
@@ -40,7 +43,7 @@ public class AuthService {
         user.setRole(request.getRole());
         repository.save(user);
 
-        return ResponseEntity.ok(new AuthResponse(null, "User registered successfully", user.getUsername(), user.getPassword()));
+        return ResponseEntity.ok(new AuthResponse(null, "User registered successfully", user.getUsername(), user.getPassword(), user.getRole()));
     }
 
     public ResponseEntity<AuthResponse> authenticate(User request, HttpServletResponse response) {
@@ -52,12 +55,12 @@ public class AuthService {
         );
         User user = repository.findByUsername(request.getUsername()).orElse(null);
         if (user == null) {
-            return ResponseEntity.badRequest().body(new AuthResponse(null, "User not found", null, null));
+            return ResponseEntity.badRequest().body(new AuthResponse(null, "User not found", null, null, null));
         }
         jwtService.revokeTokenByUser(user);
         Token jwt = jwtService.saveUserToken(user);
         
         response.addHeader("Set-Cookie", "jwt=" + jwt.getToken() + "; HttpOnly; SameSite=None; Path=/");
-        return ResponseEntity.ok(new AuthResponse(jwt.getToken(), "User authenticated successfully", user.getUsername(), user.getPassword()));
+        return ResponseEntity.ok(new AuthResponse(jwt.getToken(), "User authenticated successfully", user.getUsername(), user.getPassword(), user.getRole()));
     }
 }

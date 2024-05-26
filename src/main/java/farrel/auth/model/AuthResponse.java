@@ -5,12 +5,14 @@ public class AuthResponse {
     private String message;
     private String username;
     private String password;
+    private Role role;
 
-    public AuthResponse(String token, String message, String username, String password) {
+    public AuthResponse(String token, String message, String username, String password, Role role) {
         this.token = token;
         this.message = message;
         this.username = username;
         this.password = password;
+        this.role = role;
     }
 
     // Getters and Setters
@@ -44,5 +46,13 @@ public class AuthResponse {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void Role(Role role) {
+        this.role = role;
     }
 }
