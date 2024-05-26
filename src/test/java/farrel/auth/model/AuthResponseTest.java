@@ -12,13 +12,15 @@ public class AuthResponseTest {
         String expectedUsername = "testUser";
         String expectedPassword = "testPass";
         Role expectedRole = Role.STAFF;
+        long expectedMoney = 100;
 
-        AuthResponse authResponse = new AuthResponse(expectedToken, expectedMessage, expectedUsername, expectedPassword, expectedRole);
+        AuthResponse authResponse = new AuthResponse(expectedToken, expectedMessage, expectedUsername, expectedPassword, expectedRole, expectedMoney);
 
         assertEquals(expectedToken, authResponse.getToken());
         assertEquals(expectedMessage, authResponse.getMessage());
         assertEquals(expectedUsername, authResponse.getUsername());
         assertEquals(expectedPassword, authResponse.getPassword());
         assertEquals(expectedRole, authResponse.getRole());
+        assertEquals(expectedMoney, authResponse.getMoney());
     }
 }

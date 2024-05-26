@@ -31,19 +31,20 @@ public class AuthService {
 
     public ResponseEntity<AuthResponse> register(User request) {
         if(repository.findByUsername(request.getUsername()).isPresent()) {
-            return ResponseEntity.badRequest().body(new AuthResponse(null, "Username is already taken",null, null,null));
+            return ResponseEntity.badRequest().body(new AuthResponse(null, "Username is already taken",null, null,null, 0));
         }
         if (request.getPassword().length() < 8) {
-            return ResponseEntity.badRequest().body(new AuthResponse(null, "Password must be at least 8 characters",null,null,null));
+            return ResponseEntity.badRequest().body(new AuthResponse(null, "Password must be at least 8 characters",null,null,null, 0));
         }
         User user = new User();
         user.setEmail(request.getEmail());
         user.setUsername(request.getUsername());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setRole(request.getRole());
+        user.setMoney(0);
         repository.save(user);
 
-        return ResponseEntity.ok(new AuthResponse(null, "User registered successfully", user.getUsername(), user.getPassword(), user.getRole()));
+        return ResponseEntity.ok(new AuthResponse(null, "User registered successfully", user.getUsername(), user.getPassword(), user.getRole(), user.getMoney()));
     }
 
     public ResponseEntity<AuthResponse> authenticate(User request, HttpServletResponse response) {
@@ -55,12 +56,12 @@ public class AuthService {
         );
         User user = repository.findByUsername(request.getUsername()).orElse(null);
         if (user == null) {
-            return ResponseEntity.badRequest().body(new AuthResponse(null, "User not found", null, null, null));
+            return ResponseEntity.badRequest().body(new AuthResponse(null, "User not found", null, null, null, 0));
         }
         jwtService.revokeTokenByUser(user);
         Token jwt = jwtService.saveUserToken(user);
         
         response.addHeader("Set-Cookie", "jwt=" + jwt.getToken() + "; HttpOnly; SameSite=None; Path=/");
-        return ResponseEntity.ok(new AuthResponse(jwt.getToken(), "User authenticated successfully", user.getUsername(), user.getPassword(), user.getRole()));
+        return ResponseEntity.ok(new AuthResponse(jwt.getToken(), "User authenticated successfully", user.getUsername(), user.getPassword(), user.getRole(), user.getMoney()));
     }
 }

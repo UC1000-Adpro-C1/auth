@@ -6,13 +6,15 @@ public class AuthResponse {
     private String username;
     private String password;
     private Role role;
+    private long money;
 
-    public AuthResponse(String token, String message, String username, String password, Role role) {
+    public AuthResponse(String token, String message, String username, String password, Role role, long money) {
         this.token = token;
         this.message = message;
         this.username = username;
         this.password = password;
         this.role = role;
+        this.money = money;
     }
 
     // Getters and Setters
@@ -54,5 +56,13 @@ public class AuthResponse {
 
     public void Role(Role role) {
         this.role = role;
+    }
+
+    public long getMoney() {
+        return money;
+    }
+
+    public void setMoney(long money) {
+        this.money = money;
     }
 }
