@@ -27,7 +27,7 @@ public class AuthControllerTest {
     @Test
     public void testRegister() {
         User user = new User();
-        AuthResponse expectedResponse = new AuthResponse("testToken", "User registered successfully");
+        AuthResponse expectedResponse = new AuthResponse("testToken", "User registered successfully", user.getUsername(), user.getPassword());
         when(authService.register(user)).thenReturn(ResponseEntity.ok(expectedResponse));
 
         ResponseEntity<AuthResponse> response = authController.register(user);
@@ -38,7 +38,7 @@ public class AuthControllerTest {
     @Test
     public void testLogin() {
         User user = new User();
-        AuthResponse expectedResponse = new AuthResponse("testToken", "User registered successfully");
+        AuthResponse expectedResponse = new AuthResponse("testToken", "User registered successfully", user.getUsername(), user.getPassword());
         when(authService.authenticate(user, null)).thenReturn(ResponseEntity.ok(expectedResponse));
 
         ResponseEntity<AuthResponse> response = authController.login(user, null);
